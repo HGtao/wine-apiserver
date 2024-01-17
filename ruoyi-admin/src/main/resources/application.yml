@@ -8,7 +8,7 @@ ruoyi:
   copyrightYear: 2023
 
 captcha:
-  enable: true
+  enable: false
   # 页面 <参数设置> 可开启关闭 验证码校验
   # 验证码类型 math 数组计算 char 字符验证
   type: MATH
@@ -118,6 +118,8 @@ security:
     # actuator 监控配置
     - /actuator
     - /actuator/**
+    # wine 自定义模块配置
+    - /wine/**
 
 # 多租户配置
 tenant:
@@ -140,11 +142,11 @@ tenant:
 mybatis-plus:
   # 不支持多包, 如有需要可在注解配置 或 提升扫包等级
   # 例如 com.**.**.mapper
-  mapperPackage: org.dromara.**.mapper
+  mapperPackage: org.dromara.**.mapper com.**.**.mapper
   # 对应的 XML 文件位置
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 实体扫描，多个package用逗号或者分号分隔
-  typeAliasesPackage: org.dromara.**.domain
+  typeAliasesPackage: org.dromara.**.domain com.wine.**.domain
   global-config:
     dbConfig:
       # 主键类型

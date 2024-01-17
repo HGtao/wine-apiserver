@@ -339,6 +339,12 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!--添加wine模块-->
+            <dependency>
+                <groupId>com.wine</groupId>
+                <artifactId>wine-markete</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

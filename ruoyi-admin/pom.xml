@@ -75,6 +75,12 @@
             <artifactId>ruoyi-demo</artifactId>
         </dependency>
 
+        <!--  wine模块  -->
+        <dependency>
+            <groupId>com.wine</groupId>
+            <artifactId>wine-markete</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
