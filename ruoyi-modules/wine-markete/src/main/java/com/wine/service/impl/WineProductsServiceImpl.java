@@ -1,5 +1,6 @@
 package com.wine.service.impl;
 
+import cn.hutool.core.lang.generator.SnowflakeGenerator;
 import com.wine.domain.WineProducts;
 import com.wine.domain.bo.WineProductsBo;
 import com.wine.domain.vo.WineProductsVo;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,6 @@ public class WineProductsServiceImpl implements IWineProductsService {
         lqw.like(StringUtils.isNotBlank(bo.getName()), WineProducts::getName, bo.getName());
         lqw.eq(bo.getPrice() != null, WineProducts::getPrice, bo.getPrice());
         lqw.eq(bo.getPurchasePrice() != null, WineProducts::getPurchasePrice, bo.getPurchasePrice());
-        lqw.eq(StringUtils.isNotBlank(bo.getProductNumber()), WineProducts::getProductNumber, bo.getProductNumber());
         lqw.eq(bo.getIsGift() != null, WineProducts::getIsGift, bo.getIsGift());
         lqw.eq(bo.getProductType() != null, WineProducts::getProductType, bo.getProductType());
         lqw.eq(bo.getFirstMonthAmount() != null, WineProducts::getFirstMonthAmount, bo.getFirstMonthAmount());
@@ -91,7 +92,6 @@ public class WineProductsServiceImpl implements IWineProductsService {
     @Override
     public Boolean updateByBo(WineProductsBo bo) {
         WineProducts update = MapstructUtils.convert(bo, WineProducts.class);
-        validEntityBeforeSave(update);
         return baseMapper.updateById(update) > 0;
     }
 
@@ -99,7 +99,26 @@ public class WineProductsServiceImpl implements IWineProductsService {
      * 保存前的数据校验
      */
     private void validEntityBeforeSave(WineProducts entity){
-        //TODO 做一些数据校验,如唯一约束
+        // 对商品名称做唯一约束
+        if(StringUtils.isNotBlank(entity.getName())){
+            WineProducts query = new WineProducts();
+            query.setName(entity.getName());
+            if(baseMapper.selectCount(Wrappers.lambdaQuery(query)) > 0){
+                throw new RuntimeException("商品名称已存在");
+            }
+        }
+        // 对商品编号做唯一约束，没有则使用雪花算法生成，有则判断数据库是否已存在
+        System.out.println("-----"+StringUtils.isNotBlank(entity.getProductNumber()));
+        if(StringUtils.isNotBlank(entity.getProductNumber())){
+            if(baseMapper.selectCount(Wrappers.lambdaQuery()) > 0){
+                throw new RuntimeException("商品编号已存在");
+            }
+        } else {
+            // 商品编号未提供，使用雪花算法生成
+            long snowflakeId = new SnowflakeGenerator().next();
+            entity.setProductNumber(String.valueOf(snowflakeId));
+        }
+
     }
 
     /**

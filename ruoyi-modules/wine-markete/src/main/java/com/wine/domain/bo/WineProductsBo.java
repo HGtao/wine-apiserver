@@ -46,21 +46,15 @@ public class WineProductsBo extends BaseEntity {
     private BigDecimal purchasePrice;
 
     /**
-     * 商品编号
+     * 是否为赠送商品
      */
-    @NotBlank(message = "商品编号不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String productNumber;
-
-    /**
-     * 是否为赠送商品(字典)
-     */
-    @NotNull(message = "是否为赠送商品(字典)不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "是否为赠送商品不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer isGift;
 
     /**
-     * 商品类型(字典)
+     * 商品类型
      */
-    @NotNull(message = "商品类型(字典)不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "商品类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long productType;
 
     /**
@@ -76,10 +70,7 @@ public class WineProductsBo extends BaseEntity {
     private BigDecimal secondMonthAmount;
 
     /**
-     * 备注
+     * 商品编号
      */
-    @NotBlank(message = "备注不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String remark;
-
-
+    private String productNumber;
 }

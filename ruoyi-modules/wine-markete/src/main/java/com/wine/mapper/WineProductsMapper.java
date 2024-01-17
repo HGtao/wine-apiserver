@@ -13,5 +13,6 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  */
 @Mapper
 public interface WineProductsMapper extends BaseMapperPlus<WineProducts, WineProductsVo> {
-
+    @Override
+    int insert(WineProducts entity);
 }
