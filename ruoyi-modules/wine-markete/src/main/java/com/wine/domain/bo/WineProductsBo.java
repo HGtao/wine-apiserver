@@ -37,22 +37,25 @@ public class WineProductsBo extends BaseEntity {
      * 售卖价格
      */
     @NotNull(message = "售卖价格不能为空", groups = { AddGroup.class, EditGroup.class })
+    @DecimalMin(value = "0.0", inclusive = false, message = "售卖价格不能为负数", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal price;
 
     /**
      * 进货价格
      */
     @NotNull(message = "进货价格不能为空", groups = { AddGroup.class, EditGroup.class })
+    @DecimalMin(value = "0.0", inclusive = false, message = "进货价格不能为负数", groups = { AddGroup.class, EditGroup.class })
+
     private BigDecimal purchasePrice;
 
     /**
-     * 是否为赠送商品
+     * 是否为赠送商品(0为非赠送，1为赠送)
      */
     @NotNull(message = "是否为赠送商品不能为空", groups = { AddGroup.class, EditGroup.class })
     private Integer isGift;
 
     /**
-     * 商品类型
+     * 商品类型(1 白酒 2 饮料 3啤酒)
      */
     @NotNull(message = "商品类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long productType;
@@ -61,16 +64,23 @@ public class WineProductsBo extends BaseEntity {
      * 首月返现金额
      */
     @NotNull(message = "首月返现金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    @DecimalMin(value = "0.0", inclusive = false, message = "首月返现金额不能为负数", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal firstMonthAmount;
 
     /**
      * 次月返现金额
      */
     @NotNull(message = "次月返现金额不能为空", groups = { AddGroup.class, EditGroup.class })
+    @DecimalMin(value = "0.0", inclusive = false, message = "次月返现金额不能为负数", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal secondMonthAmount;
 
     /**
      * 商品编号
      */
     private String productNumber;
+
+    /**
+     * 备注
+     */
+    private String remark;
 }

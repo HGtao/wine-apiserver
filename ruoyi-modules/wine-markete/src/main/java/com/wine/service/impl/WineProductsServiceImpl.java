@@ -77,8 +77,30 @@ public class WineProductsServiceImpl implements IWineProductsService {
      */
     @Override
     public Boolean insertByBo(WineProductsBo bo) {
+        // 校验商品名称是否唯一
+        LambdaQueryWrapper<WineProducts> nameQueryWrapper = new LambdaQueryWrapper<>();
+        nameQueryWrapper.eq(WineProducts::getName, bo.getName());
+        if (baseMapper.selectCount(nameQueryWrapper) > 0) {
+            // 如果存在相同名称的商品，抛出异常或处理方式
+            throw new RuntimeException("商品名称重复");
+        }
+
+        // 校验商品编号是否唯一
+        if (StringUtils.isNotBlank(bo.getProductNumber())) {
+            LambdaQueryWrapper<WineProducts> numberQueryWrapper = new LambdaQueryWrapper<>();
+            numberQueryWrapper.eq(WineProducts::getProductNumber, bo.getProductNumber());
+            if (baseMapper.selectCount(numberQueryWrapper) > 0) {
+                // 如果存在相同商品编号，抛出异常或处理方式
+                throw new RuntimeException("商品编号重复");
+            }
+        } else {
+            // 如果商品编号未传入，则使用雪花算法生成
+            long snowflakeId = new SnowflakeGenerator().next();
+            bo.setProductNumber(String.valueOf(snowflakeId));
+        }
+
+        // 执行新增操作
         WineProducts add = MapstructUtils.convert(bo, WineProducts.class);
-        validEntityBeforeSave(add);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -86,40 +108,30 @@ public class WineProductsServiceImpl implements IWineProductsService {
         return flag;
     }
 
+
     /**
      * 修改商品
      */
     @Override
     public Boolean updateByBo(WineProductsBo bo) {
+        // 校验商品名称和商品编号是否唯一
+        LambdaQueryWrapper<WineProducts> uniqueCheckWrapper = new LambdaQueryWrapper<>();
+        uniqueCheckWrapper.and(wrapper -> wrapper.eq(WineProducts::getName, bo.getName())
+                .or()
+                .eq(WineProducts::getProductNumber, bo.getProductNumber()))
+            .ne(WineProducts::getId, bo.getId()); // 排除当前商品记录
+
+        if (baseMapper.selectCount(uniqueCheckWrapper) > 0) {
+            // 如果存在相同名称或相同商品编号，抛出异常或处理方式
+            throw new RuntimeException("商品名称或商品编号重复");
+        }
+
+        // 执行更新操作
         WineProducts update = MapstructUtils.convert(bo, WineProducts.class);
         return baseMapper.updateById(update) > 0;
     }
 
-    /**
-     * 保存前的数据校验
-     */
-    private void validEntityBeforeSave(WineProducts entity){
-        // 对商品名称做唯一约束
-        if(StringUtils.isNotBlank(entity.getName())){
-            WineProducts query = new WineProducts();
-            query.setName(entity.getName());
-            if(baseMapper.selectCount(Wrappers.lambdaQuery(query)) > 0){
-                throw new RuntimeException("商品名称已存在");
-            }
-        }
-        // 对商品编号做唯一约束，没有则使用雪花算法生成，有则判断数据库是否已存在
-        System.out.println("-----"+StringUtils.isNotBlank(entity.getProductNumber()));
-        if(StringUtils.isNotBlank(entity.getProductNumber())){
-            if(baseMapper.selectCount(Wrappers.lambdaQuery()) > 0){
-                throw new RuntimeException("商品编号已存在");
-            }
-        } else {
-            // 商品编号未提供，使用雪花算法生成
-            long snowflakeId = new SnowflakeGenerator().next();
-            entity.setProductNumber(String.valueOf(snowflakeId));
-        }
 
-    }
 
     /**
      * 批量删除商品
