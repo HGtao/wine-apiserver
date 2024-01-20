@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wine.mapper.WineProductsMapper">
     <insert id="insert">
-        INSERT INTO wine_products (name, price, purchase_price, product_number, is_gift, product_type, first_month_amount, second_month_amount, create_dept, create_by, create_time, update_by, update_time, remark)
-        VALUES (#{name}, #{price}, #{purchasePrice}, #{productNumber}, #{isGift}, #{productType}, #{firstMonthAmount}, #{secondMonthAmount}, #{createDept}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark})
+        INSERT INTO wine_products (name, price, purchase_price, product_number, gift, product_type, first_month_amount, second_month_amount, create_dept, create_by, create_time, update_by, update_time, remark)
+        VALUES (#{name}, #{price}, #{purchasePrice}, #{productNumber}, #{gift}, #{productType}, #{firstMonthAmount}, #{secondMonthAmount}, #{createDept}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark})
     </insert>
 </mapper>

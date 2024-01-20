@@ -6,6 +6,7 @@ import com.wine.domain.bo.WineProductsBo;
 import com.wine.domain.vo.WineProductsVo;
 import com.wine.mapper.WineProductsMapper;
 import com.wine.service.IWineProductsService;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -14,7 +15,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class WineProductsServiceImpl implements IWineProductsService {
         lqw.like(StringUtils.isNotBlank(bo.getName()), WineProducts::getName, bo.getName());
         lqw.eq(bo.getPrice() != null, WineProducts::getPrice, bo.getPrice());
         lqw.eq(bo.getPurchasePrice() != null, WineProducts::getPurchasePrice, bo.getPurchasePrice());
-        lqw.eq(bo.getIsGift() != null, WineProducts::getIsGift, bo.getIsGift());
+        lqw.eq(bo.getGift() != null, WineProducts::getGift, bo.getGift());
         lqw.eq(bo.getProductType() != null, WineProducts::getProductType, bo.getProductType());
         lqw.eq(bo.getFirstMonthAmount() != null, WineProducts::getFirstMonthAmount, bo.getFirstMonthAmount());
         lqw.eq(bo.getSecondMonthAmount() != null, WineProducts::getSecondMonthAmount, bo.getSecondMonthAmount());
@@ -81,8 +81,8 @@ public class WineProductsServiceImpl implements IWineProductsService {
         LambdaQueryWrapper<WineProducts> nameQueryWrapper = new LambdaQueryWrapper<>();
         nameQueryWrapper.eq(WineProducts::getName, bo.getName());
         if (baseMapper.selectCount(nameQueryWrapper) > 0) {
-            // 如果存在相同名称的商品，抛出异常或处理方式
-            throw new RuntimeException("商品名称重复");
+            // 如果存在相同名称的商品，抛出异常
+            throw new ServiceException("商品名称重复");
         }
 
         // 校验商品编号是否唯一
@@ -90,8 +90,8 @@ public class WineProductsServiceImpl implements IWineProductsService {
             LambdaQueryWrapper<WineProducts> numberQueryWrapper = new LambdaQueryWrapper<>();
             numberQueryWrapper.eq(WineProducts::getProductNumber, bo.getProductNumber());
             if (baseMapper.selectCount(numberQueryWrapper) > 0) {
-                // 如果存在相同商品编号，抛出异常或处理方式
-                throw new RuntimeException("商品编号重复");
+                // 如果存在相同商品编号，抛出异常
+                throw new ServiceException("商品编号重复");
             }
         } else {
             // 如果商品编号未传入，则使用雪花算法生成
@@ -119,18 +119,18 @@ public class WineProductsServiceImpl implements IWineProductsService {
         uniqueCheckWrapper.and(wrapper -> wrapper.eq(WineProducts::getName, bo.getName())
                 .or()
                 .eq(WineProducts::getProductNumber, bo.getProductNumber()))
-            .ne(WineProducts::getId, bo.getId()); // 排除当前商品记录
+            // 排除当前商品记录
+            .ne(WineProducts::getId, bo.getId());
 
         if (baseMapper.selectCount(uniqueCheckWrapper) > 0) {
-            // 如果存在相同名称或相同商品编号，抛出异常或处理方式
-            throw new RuntimeException("商品名称或商品编号重复");
+            // 如果存在相同名称或相同商品编号，抛出异常
+            throw new ServiceException("商品名称或商品编号重复");
         }
 
         // 执行更新操作
         WineProducts update = MapstructUtils.convert(bo, WineProducts.class);
         return baseMapper.updateById(update) > 0;
     }
-
 
 
     /**

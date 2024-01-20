@@ -51,7 +51,7 @@ public class WineProducts extends TenantEntity {
     /**
      * 是否为赠送商品(字典)
      */
-    private Integer isGift;
+    private Integer gift;
 
     /**
      * 商品类型(字典)

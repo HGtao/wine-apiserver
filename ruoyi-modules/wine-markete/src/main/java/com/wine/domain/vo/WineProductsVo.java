@@ -63,7 +63,7 @@ public class WineProductsVo implements Serializable {
      * 是否为赠送商品(字典)
      */
     @ExcelProperty(value = "是否为赠送商品(0为非赠送，1为赠送)")
-    private Integer isGift;
+    private Integer gift;
 
     /**
      * 商品类型(字典)
